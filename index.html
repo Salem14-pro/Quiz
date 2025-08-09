@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <meta name="description" content="Trivia Crack Style Quiz App - Play, Learn, and Compete!">
+  <title>Trivia Crack Quiz</title>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+  <!-- Icons (Font Awesome) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <style>
+    :root {
+      --primary: #4f8cff;
+      --secondary: #ffb347;
+      --success: #4caf50;
+      --error: #e74c3c;
+      --bg: #f5f7fa;
+      --card: #fff;
+      --text: #222;
+      --muted: #888;
+      --border: #e0e0e0;
+      --shadow: 0 4px 24px rgba(0,0,0,0.08);
+      --category-science: #4f8cff;
+      --category-history: #ff6f61;
+      --category-sports: #43d19e;
+      --category-entertainment: #ffb347;
+      --category-geography: #6c5ce7;
+      --category-art: #fd79a8;
+      --badge: #ffd700;
+      --timer: #222;
+      --dark-bg: #181a20;
+      --dark-card: #23262f;
+      --dark-text: #f5f7fa;
+      --dark-muted: #888;
+      --dark-border: #23262f;
+      --dark-shadow: 0 4px 24px rgba(0,0,0,0.32);
+    }
+    [data-theme="dark"] {
+      --bg: var(--dark-bg);
+      --card: var(--dark-card);
+      --text: var(--dark-text);
+      --muted: var(--dark-muted);
+      --border: var(--dark-border);
+      --shadow: var(--dark-shadow);
+      --timer: #fff;
+    }
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      font-family: 'Montserrat', 'Roboto', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      transition: background 0.3s, color 0.3s;
+    }
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      background: var(--bg);
+    }
+    .container {
+      width: 100%;
+      max-width: 480px;
+      margin: 32px auto;
+      padding: 0 16px;
+      box-sizing: border-box;
+    }
+    .card {
+      background: var(--card);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      padding: 32px 24px;
+      margin-bottom: 24px;
+      border: 1px solid var(--border);
+      transition: background 0.3s, color 0.3s;
+    }
+    .center {
+      text-align: center;
+    }
+    h1, h2, h3 {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      margin: 0 0 16px 0;
+      color: var(--primary);
+    }
+    h1 {
+      font-size: 2.2rem;
+      letter-spacing: 1px;
+    }
+    h2 {
+      font-size: 1.4rem;
+      margin-bottom: 8px;
+    }
+    h3 {
+      font-size: 1.1rem;
+      color: var(--muted);
+    }
+    .btn {
+      display: inline-block;
+      background: var(--primary);
+      color: #fff;
+      font-weight: 700;
+      border: none;
+      border-radius: 12px;
+      padding: 12px 32px;
+      font-size: 1rem;
+      margin: 8px 0;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(79,140,255,0.12);
+      transition: background 0.2s, transform 0.2s;
+      outline: none;
+    }
+    .btn:hover, .btn:focus {
+      background: var(--secondary);
+      transform: translateY(-2px) scale(1.04);
+    }
+    .btn.secondary {
+      background: var(--secondary);
+      color: #222;
+    }
+    .btn.muted {
+      background: var(--muted);
+      color: #fff;
+    }
+    .btn.icon {
+      padding: 10px 16px;
+      font-size: 1.1rem;
+      border-radius: 50%;
+      margin: 0 4px;
+      background: var(--card);
+      color: var(--primary);
+      border: 1px solid var(--border);
+      box-shadow: none;
+    }
+    .btn.icon.active {
+      background: var(--primary);
+      color: #fff;
+    }
+    .btn.icon:focus {
+      outline: 2px solid var(--primary);
+    }
+    .categories {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px;
+      margin: 24px 0;
+    }
+    .category-card {
+      background: var(--card);
+      border-radius: 14px;
+      box-shadow: var(--shadow);
+      padding: 18px 12px;
+      text-align: center;
+      cursor: pointer;
+      border: 2px solid var(--border);
+      transition: border 0.2s, box-shadow 0.2s;
+      position: relative;
+      min-height: 90px;
+      font-weight: 700;
+      font-size: 1.1rem;
+      user-select: none;
+    }
+    .category-card.selected {
+      border: 2px solid var(--primary);
+      box-shadow: 0 2px 12px rgba(79,140,255,0.18);
+    }
+    .category-icon {
+      font-size: 2rem;
+      margin-bottom: 6px;
+      display: block;
+    }
+    .category-science { color: var(--category-science);}
+    .category-history { color: var(--category-history);}
+    .category-sports { color: var(--category-sports);}
+    .category-entertainment { color: var(--category-entertainment);}
+    .category-geography { color: var(--category-geography);}
+    .category-art { color: var(--category-art);}
+    .progress-bar {
+      width: 100%;
+      height: 12px;
+      background: var(--border);
+      border-radius: 8px;
+      margin: 18px 0 12px 0;
+      overflow: hidden;
+      position: relative;
+    }
+    .progress {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      border-radius: 8px;
+      transition: width 0.4s cubic-bezier(.4,2,.3,1);
+    }
+    .question-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .question-category {
+      font-weight: 700;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .question-category .fa-solid {
+      font-size: 1.2rem;
+    }
+    .question-difficulty {
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: var(--muted);
+      background: #eee;
+      border-radius: 8px;
+      padding: 2px 10px;
+      margin-left: 8px;
+      text-transform: capitalize;
+      display: inline-block;
+    }
+    .question-timer {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--timer);
+      background: #eee;
+      border-radius: 8px;
+      padding: 2px 10px;
+      margin-left: 8px;
+      display: inline-block;
+      min-width: 48px;
+      text-align: center;
+      transition: color 0.3s;
+    }
+    .options {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+      margin: 18px 0;
+    }
+    .option-btn {
+      background: var(--card);
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 12px;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: border 0.2s, background 0.2s, color 0.2s, transform 0.2s;
+      outline: none;
+      text-align: left;
+      position: relative;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      user-select: none;
+    }
+    .option-btn:hover, .option-btn:focus {
+      border: 2px solid var(--primary);
+      background: #f0f8ff;
+      transform: scale(1.03);
+    }
+    .option-btn.correct {
+      border: 2px solid var(--success);
+      background: #eafaf1;
+      color: var(--success);
+      animation: correctPulse 0.5s;
+    }
+    .option-btn.incorrect {
+      border: 2px solid var(--error);
+      background: #ffeaea;
+      color: var(--error);
+      animation: incorrectShake 0.5s;
+    }
+    @keyframes correctPulse {
+      0% { box-shadow: 0 0 0 0 var(--success);}
+      70% { box-shadow: 0 0 0 10px rgba(76,175,80,0.18);}
+      100% { box-shadow: 0 0 0 0 var(--success);}
+    }
+    @keyframes incorrectShake {
+      0% { transform: translateX(0);}
+      20% { transform: translateX(-6px);}
+      40% { transform: translateX(6px);}
+      60% { transform: translateX(-6px);}
+      80% { transform: translateX(6px);}
+      100% { transform: translateX(0);}
+    }
+    .option-btn.disabled {
+      pointer-events: none;
+      opacity: 0.7;
+    }
+    .explanation {
+      font-size: 0.98rem;
+      color: var(--muted);
+      margin: 8px 0 0 0;
+      background: #f8f8f8;
+      border-radius: 8px;
+      padding: 8px 12px;
+      display: block;
+    }
+    .lifelines {
+      display: flex;
+      gap: 12px;
+      margin: 12px 0;
+      justify-content: center;
+    }
+    .lifeline-btn {
+      background: var(--card);
+      border: 2px solid var(--border);
+      border-radius: 50%;
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      cursor: pointer;
+      transition: border 0.2s, background 0.2s;
+      color: var(--primary);
+      position: relative;
+      outline: none;
+    }
+    .lifeline-btn.used {
+      border: 2px solid var(--muted);
+      color: var(--muted);
+      background: #f0f0f0;
+      pointer-events: none;
+      opacity: 0.7;
+    }
+    .lifeline-btn:focus {
+      border: 2px solid var(--secondary);
+    }
+    .lifeline-tooltip {
+      position: absolute;
+      bottom: -28px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--card);
+      color: var(--text);
+      font-size: 0.85rem;
+      padding: 2px 8px;
+      border-radius: 6px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.2s;
+      z-index: 2;
+    }
+    .lifeline-btn:hover .lifeline-tooltip, .lifeline-btn:focus .lifeline-tooltip {
+      opacity: 1;
+    }
+    .score {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin: 12px 0;
+    }
+    .badges {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin: 12px 0;
+      justify-content: center;
+    }
+    .badge {
+      background: var(--badge);
+      color: #222;
+      font-size: 0.95rem;
+      font-weight: 700;
+      border-radius: 10px;
+      padding: 6px 14px;
+      box-shadow: 0 2px 8px rgba(255,215,0,0.12);
+      margin: 2px 0;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .badge .fa-solid {
+      font-size: 1rem;
+    }
+    .results-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 18px 0;
+    }
+    .results-table th, .results-table td {
+      padding: 8px 10px;
+      text-align: left;
+      font-size: 0.98rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .results-table th {
+      background: #f0f8ff;
+      color: var(--primary);
+      font-weight: 700;
+    }
+    .results-table td {
+      background: var(--card);
+      color: var(--text);
+    }
+    .results-table tr:last-child td {
+      border-bottom: none;
+    }
+    .stats {
+      margin: 18px 0;
+      font-size: 1rem;
+      color: var(--muted);
+    }
+    .toggle-group {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin: 12px 0;
+      justify-content: center;
+    }
+    .toggle-label {
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--muted);
+      margin-right: 6px;
+    }
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 48px;
+      height: 24px;
+    }
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: var(--border);
+      border-radius: 24px;
+      transition: background 0.2s;
+    }
+    .toggle-switch input:checked + .toggle-slider {
+      background: var(--primary);
+    }
+    .toggle-slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background: #fff;
+      border-radius: 50%;
+      transition: transform 0.2s;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .toggle-switch input:checked + .toggle-slider:before {
+      transform: translateX(24px);
+      background: var(--secondary);
+    }
+    .share-btn {
+      background: var(--success);
+      color: #fff;
+      font-weight: 700;
+      border: none;
+      border-radius: 12px;
+      padding: 10px 24px;
+      font-size: 1rem;
+      margin: 8px 0;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(76,175,80,0.12);
+      transition: background 0.2s, transform 0.2s;
+      outline: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .share-btn:hover, .share-btn:focus {
+      background: #388e3c;
+      transform: translateY(-2px) scale(1.04);
+    }
+    .footer {
+      text-align: center;
+      font-size: 0.95rem;
+      color: var(--muted);
+      margin: 24px 0 8px 0;
+    }
+    @media (max-width: 600px) {
+      .container {
+        max-width: 100vw;
+        padding: 0 4px;
+      }
+      .card {
+        padding: 18px 8px;
+      }
+      h1 { font-size: 1.4rem;}
+      h2 { font-size: 1.1rem;}
+      .category-card { font-size: 1rem; min-height: 70px;}
+      .option-btn { font-size: 0.98rem; padding: 10px 8px;}
+      .lifeline-btn { width: 38px; height: 38px; font-size: 1.1rem;}
+      .badge { font-size: 0.88rem; padding: 4px 10px;}
+    }
+    /* Accessibility focus ring */
+    .btn:focus, .option-btn:focus, .category-card:focus, .lifeline-btn:focus {
+      outline: 2px solid var(--primary);
+      outline-offset: 2px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="app"></div>
+  <div class="footer">
+    &copy; 2025 Trivia Crack Quiz &mdash; <span id="theme-toggle-label">Light Mode</span>
+    <button class="btn icon" id="theme-toggle" aria-label="Toggle dark/light mode"><i class="fa-solid fa-moon"></i></button>
+    <button class="btn icon" id="mute-toggle" aria-label="Toggle sound"><i class="fa-solid fa-volume-up"></i></button>
+  </div>
+  <script>
+    // --- Utility Functions ---
+    const shuffle = arr => arr.map(a => [Math.random(), a]).sort((a,b)=>a[0]-b[0]).map(a=>a[1]);
+    const pickRandom = (arr, n) => shuffle(arr).slice(0, n);
+    const formatTime = s => `${s<10?'0':''}${s}`;
+    const getCategoryColor = cat => ({
+      Science: 'category-science',
+      History: 'category-history',
+      Sports: 'category-sports',
+      Entertainment: 'category-entertainment',
+      Geography: 'category-geography',
+      'Art & Literature': 'category-art'
+    }[cat] || 'category-science');
+    const getCategoryIcon = cat => ({
+      Science: 'fa-flask',
+      History: 'fa-landmark',
+      Sports: 'fa-basketball-ball',
+      Entertainment: 'fa-film',
+      Geography: 'fa-globe',
+      'Art & Literature': 'fa-palette'
+    }[cat] || 'fa-question');
+    const getDifficultyColor = diff => ({
+      easy: '#4caf50',
+      medium: '#ffb347',
+      hard: '#e74c3c'
+    }[diff]);
+    // --- Sound Effects ---
+    const sounds = {
+      correct: new Audio('https://cdn.pixabay.com/audio/2022/03/15/audio_115b6b2e6b.mp3'),
+      incorrect: new Audio('https://cdn.pixabay.com/audio/2022/03/15/audio_115b6b2e6b.mp3'),
+      click: new Audio('https://cdn.pixabay.com/audio/2022/03/15/audio_115b6b2e6b.mp3'),
+      win: new Audio('https://cdn.pixabay.com/audio/2022/03/15/audio_115b6b2e6b.mp3'),
+      lose: new Audio('https://cdn.pixabay.com/audio/2022/03/15/audio_115b6b2e6b.mp3')
+    };
+    let soundEnabled = true;
+    function playSound(name) {
+      if (!soundEnabled) return;
+      if (sounds[name]) {
+        sounds[name].currentTime = 0;
+        sounds[name].play();
+      }
+    }
+    // --- Local Storage ---
+    const LS_KEY = 'trivia_quiz_stats_v1';
+    function loadStats() {
+      try {
+        return JSON.parse(localStorage.getItem(LS_KEY)) || {
+          gamesPlayed: 0,
+          bestScore: 0,
+          favoriteCategory: '',
+          highScores: [],
+          categoryStats: {},
+        };
+      } catch { return { gamesPlayed: 0, bestScore: 0, favoriteCategory: '', highScores: [], categoryStats: {} }; }
+    }
+    function saveStats(stats) {
+      localStorage.setItem(LS_KEY, JSON.stringify(stats));
+    }
+    // --- Question Database ---
+    // For brevity, only 5 sample questions per category are shown. Add more for full production.
+    const questionBank = [
+      // Science
+      {id:1,category:"Science",difficulty:"easy",question:"What planet is known as the Red Planet?",options:["Mars","Venus","Jupiter","Saturn"],correct:0,explanation:"Mars is called the Red Planet due to its reddish appearance.",points:10},
+      {id:2,category:"Science",difficulty:"medium",question:"What is the chemical symbol for gold?",options:["Au","Ag","Gd","Go"],correct:0,explanation:"Gold's symbol is Au, from Latin 'Aurum'.",points:20},
+      {id:3,category:"Science",difficulty:"hard",question:"Who developed the theory of relativity?",options:["Isaac Newton","Albert Einstein","Marie Curie","Nikola Tesla"],correct:1,explanation:"Einstein developed the theory of relativity.",points:30},
+      {id:4,category:"Science",difficulty:"easy",question:"What gas do plants absorb from the atmosphere?",options:["Oxygen","Carbon Dioxide","Nitrogen","Hydrogen"],correct:1,explanation:"Plants absorb CO₂ for photosynthesis.",points:10},
+      {id:5,category:"Science",difficulty:"medium",question:"What is the powerhouse of the cell?",options:["Nucleus","Mitochondria","Ribosome","Chloroplast"],correct:1,explanation:"Mitochondria generate energy for the cell.",points:20},
+      // History
+      {id:21,category:"History",difficulty:"easy",question:"Who was the first President of the United States?",options:["George Washington","Abraham Lincoln","Thomas Jefferson","John Adams"],correct:0,explanation:"George Washington was the first U.S. President.",points:10},
+      {id:22,category:"History",difficulty:"medium",question:"In which year did World War II end?",options:["1942","1945","1939","1950"],correct:1,explanation:"WWII ended in 1945.",points:20},
+      {id:23,category:"History",difficulty:"hard",question:"Who was known as the 'Iron Lady'?",options:["Margaret Thatcher","Indira Gandhi","Angela Merkel","Golda Meir"],correct:0,explanation:"Margaret Thatcher was called the 'Iron Lady'.",points:30},
+      {id:24,category:"History",difficulty:"easy",question:"Which ancient civilization built the pyramids?",options:["Romans","Egyptians","Greeks","Mayans"],correct:1,explanation:"Egyptians built the pyramids.",points:10},
+      {id:25,category:"History",difficulty:"medium",question:"Who wrote the Declaration of Independence?",options:["Benjamin Franklin","Thomas Jefferson","John Hancock","James Madison"],correct:1,explanation:"Thomas Jefferson was the main author.",points:20},
+      // Sports
+      {id:41,category:"Sports",difficulty:"easy",question:"How many players are on a soccer team?",options:["9","10","11","12"],correct:2,explanation:"A soccer team has 11 players.",points:10},
+      {id:42,category:"Sports",difficulty:"medium",question:"Which country won the FIFA World Cup in 2018?",options:["Brazil","Germany","France","Argentina"],correct:2,explanation:"France won the 2018 World Cup.",points:20},
+      {id:43,category:"Sports",difficulty:"hard",question:"Who holds the record for most Olympic gold medals?",options:["Usain Bolt","Michael Phelps","Simone Biles","Carl Lewis"],correct:1,explanation:"Michael Phelps has the most Olympic golds.",points:30},
+      {id:44,category:"Sports",difficulty:"easy",question:"What sport uses a shuttlecock?",options:["Tennis","Badminton","Squash","Table Tennis"],correct:1,explanation:"Badminton uses a shuttlecock.",points:10},
+      {id:45,category:"Sports",difficulty:"medium",question:"Which NBA team has the most championships?",options:["Lakers","Celtics","Bulls","Warriors"],correct:1,explanation:"The Boston Celtics have the most NBA titles.",points:20},
+      // Entertainment
+      {id:61,category:"Entertainment",difficulty:"easy",question:"Who played Harry Potter in the movies?",options:["Daniel Radcliffe","Rupert Grint","Elijah Wood","Tom Felton"],correct:0,explanation:"Daniel Radcliffe played Harry Potter.",points:10},
+      {id:62,category:"Entertainment",difficulty:"medium",question:"Which movie won Best Picture at the 2020 Oscars?",options:["1917","Joker","Parasite","Ford v Ferrari"],correct:2,explanation:"Parasite won Best Picture in 2020.",points:20},
+      {id:63,category:"Entertainment",difficulty:"hard",question:"Who sang 'Like a Rolling Stone'?",options:["Bob Dylan","Elvis Presley","The Beatles","Madonna"],correct:0,explanation:"Bob Dylan sang 'Like a Rolling Stone'.",points:30},
+      {id:64,category:"Entertainment",difficulty:"easy",question:"Which TV show features Sheldon Cooper?",options:["Friends","The Big Bang Theory","How I Met Your Mother","Modern Family"],correct:1,explanation:"Sheldon is from The Big Bang Theory.",points:10},
+      {id:65,category:"Entertainment",difficulty:"medium",question:"Who directed 'Jurassic Park'?",options:["James Cameron","Steven Spielberg","George Lucas","Peter Jackson"],correct:1,explanation:"Steven Spielberg directed Jurassic Park.",points:20},
+      // Geography
+      {id:81,category:"Geography",difficulty:"easy",question:"What is the capital of France?",options:["Paris","London","Berlin","Madrid"],correct:0,explanation:"Paris is the capital of France.",points:10},
+      {id:82,category:"Geography",difficulty:"medium",question:"Which river runs through Cairo?",options:["Amazon","Nile","Danube","Yangtze"],correct:1,explanation:"The Nile runs through Cairo.",points:20},
+      {id:83,category:"Geography",difficulty:"hard",question:"Which country has the most islands?",options:["Canada","Indonesia","Sweden","Philippines"],correct:2,explanation:"Sweden has the most islands.",points:30},
+      {id:84,category:"Geography",difficulty:"easy",question:"Mount Everest is located in which mountain range?",options:["Andes","Alps","Himalayas","Rockies"],correct:2,explanation:"Everest is in the Himalayas.",points:10},
+      {id:85,category:"Geography",difficulty:"medium",question:"What is the largest desert in the world?",options:["Sahara","Gobi","Antarctic","Arabian"],correct:2,explanation:"The Antarctic is the largest desert.",points:20},
+      // Art & Literature
+      {id:101,category:"Art & Literature",difficulty:"easy",question:"Who painted the Mona Lisa?",options:["Vincent van Gogh","Leonardo da Vinci","Pablo Picasso","Claude Monet"],correct:1,explanation:"Leonardo da Vinci painted the Mona Lisa.",points:10},
+      {id:102,category:"Art & Literature",difficulty:"medium",question:"Who wrote 'Romeo and Juliet'?",options:["Charles Dickens","William Shakespeare","Jane Austen","Mark Twain"],correct:1,explanation:"Shakespeare wrote 'Romeo and Juliet'.",points:20},
+      {id:103,category:"Art & Literature",difficulty:"hard",question:"Which novel begins with 'Call me Ishmael'?",options:["Moby-Dick","War and Peace","Great Expectations","Ulysses"],correct:0,explanation:"'Moby-Dick' begins with 'Call me Ishmael'.",points:30},
+      {id:104,category:"Art & Literature",difficulty:"easy",question:"What is the art style of Picasso's 'Guernica'?",options:["Cubism","Impressionism","Surrealism","Baroque"],correct:0,explanation:"'Guernica' is a Cubist painting.",points:10},
+      {id:105,category:"Art & Literature",difficulty:"medium",question:"Who wrote 'Pride and Prejudice'?",options:["Emily Brontë","Jane Austen","George Eliot","Virginia Woolf"],correct:1,explanation:"Jane Austen wrote 'Pride and Prejudice'.",points:20},
+      // Add 15 more per category for full production (omitted for brevity)
+    ];
+    // --- App State ---
+    let appState = {
+      screen: 'welcome', // welcome, setup, category, question, results, stats
+      selectedCategories: [],
+      difficulty: 'mixed',
+      timerEnabled: true,
+      timerSeconds: 30,
+      currentCategory: '',
+      currentQuestions: [],
+      currentQuestionIndex: 0,
+      score: 0,
+      streak: 0,
+      maxStreak: 0,
+      answers: [],
+      usedLifelines: { '50/50': false, skip: false, extraTime: false },
+      lifelines: ['50/50', 'skip', 'extraTime'],
+      showExplanation: false,
+      showHint: false,
+      showStats: false,
+      badges: [],
+      timer: null,
+      timeLeft: 30,
+      stats: loadStats(),
+      darkMode: false,
+      muted: false,
+    };
+    // --- Main Render Function ---
+    function render() {
+      const app = document.getElementById('app');
+      app.innerHTML = '';
+      switch(appState.screen) {
+        case 'welcome': renderWelcome(app); break;
+        case 'setup': renderSetup(app); break;
+        case 'category': renderCategorySelect(app); break;
+        case 'question': renderQuestion(app); break;
+        case 'results': renderResults(app); break;
+        case 'stats': renderStats(app); break;
+      }
+      updateThemeToggle();
+      updateMuteToggle();
+    }
+    // --- Welcome Screen ---
+    function renderWelcome(app) {
+      app.innerHTML = `
+        <div class="card center" aria-label="Welcome Screen">
+          <h1><i class="fa-solid fa-crown"></i> Trivia Crack Quiz</h1>
+          <h3>Test your knowledge across 6 categories!<br>Earn badges, beat your high score, and become a Trivia Master.</h3>
+          <div style="margin:18px 0;">
+            <img src="https://cdn.pixabay.com/photo/2017/01/31/13/14/question-mark-2026515_1280.png" alt="Quiz Icon" style="width:80px; border-radius:50%; box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+          </div>
+          <button class="btn" id="start-btn" aria-label="Start Game">Start Game</button>
+          <div class="toggle-group" style="margin-top:18px;">
+            <span class="toggle-label">View Stats</span>
+            <button class="btn icon" id="stats-btn" aria-label="View Statistics"><i class="fa-solid fa-chart-bar"></i></button>
+          </div>
+        </div>
+      `;
+      document.getElementById('start-btn').onclick = () => {
+        playSound('click');
+        appState.screen = 'setup';
+        render();
+      };
+      document.getElementById('stats-btn').onclick = () => {
+        playSound('click');
+        appState.screen = 'stats';
+        render();
+      };
+    }
+    // --- Game Setup Screen ---
+    function renderSetup(app) {
+      app.innerHTML = `
+        <div class="card center" aria-label="Game Setup">
+          <h2>Game Setup</h2>
+          <div style="margin:12px 0;">
+            <label for="difficulty-select" style="font-weight:500;">Difficulty:</label>
+            <select id="difficulty-select" style="margin-left:8px; font-size:1rem; border-radius:8px; padding:4px 8px;">
+              <option value="mixed">Mixed</option>
+              <option value="easy">Easy</option>
+              <option value="medium">Medium</option>
+              <option value="hard">Hard</option>
+            </select>
+          </div>
+          <div style="margin:12px 0;">
+            <label for="timer-toggle" style="font-weight:500;">Timer:</label>
+            <label class="toggle-switch">
+              <input type="checkbox" id="timer-toggle" ${appState.timerEnabled ? 'checked' : ''}>
+              <span class="toggle-slider"></span>
+            </label>
+            <span style="margin-left:8px;">${appState.timerEnabled ? 'On' : 'Off'}</span>
+          </div>
+          <button class="btn" id="continue-btn" aria-label="Continue to Category Selection">Continue</button>
+        </div>
+      `;
+      document.getElementById('difficulty-select').value = appState.difficulty;
+      document.getElementById('difficulty-select').onchange = e => {
+        appState.difficulty = e.target.value;
+      };
+      document.getElementById('timer-toggle').onchange = e => {
+        appState.timerEnabled = e.target.checked;
+      };
+      document.getElementById('continue-btn').onclick = () => {
+        playSound('click');
+        appState.screen = 'category';
+        render();
+      };
+    }
+    // --- Category Selection Screen ---
+    function renderCategorySelect(app) {
+      app.innerHTML = `
+        <div class="card center" aria-label="Category Selection">
+          <h2>Select Categories</h2>
+          <h3>Pick your favorite or play all!</h3>
+          <div class="categories" id="categories-list"></div>
+          <button class="btn" id="play-btn" aria-label="Play Game">Play</button>
+        </div>
+      `;
+      const categories = [
+        {name:"Science",icon:"fa-flask",color:"category-science"},
+        {name:"History",icon:"fa-landmark",color:"category-history"},
+        {name:"Sports",icon:"fa-basketball-ball",color:"category-sports"},
+        {name:"Entertainment",icon:"fa-film",color:"category-entertainment"},
+        {name:"Geography",icon:"fa-globe",color:"category-geography"},
+        {name:"Art & Literature",icon:"fa-palette",color:"category-art"}
+      ];
+      const catList = document.getElementById('categories-list');
+      catList.innerHTML = categories.map(cat => `
+        <div class="category-card ${appState.selectedCategories.includes(cat.name) ? 'selected' : ''} ${cat.color}" tabindex="0" role="button" aria-label="${cat.name}" data-cat="${cat.name}">
+          <span class="category-icon"><i class="fa-solid ${cat.icon}"></i></span>
+          ${cat.name}
+        </div>
+      `).join('');
+      Array.from(catList.children).forEach(card => {
+        card.onclick = () => {
+          playSound('click');
+          const cat = card.getAttribute('data-cat');
+          if (appState.selectedCategories.includes(cat)) {
+            appState.selectedCategories = appState.selectedCategories.filter(c => c !== cat);
+          } else {
+            appState.selectedCategories.push(cat);
+          }
+          render();
+        };
+        card.onkeydown = e => {
+          if (e.key === 'Enter' || e.key === ' ') card.onclick();
+        };
+      });
+      document.getElementById('play-btn').onclick = () => {
+        playSound('click');
+        if (appState.selectedCategories.length === 0) {
+          appState.selectedCategories = categories.map(c=>c.name);
+        }
+        startGame();
+      };
+    }
+    // --- Start Game ---
+    function startGame() {
+      // Select 3 random questions per selected category, filtered by difficulty
+      let questions = [];
+      appState.selectedCategories.forEach(cat => {
+        let pool = questionBank.filter(q => q.category === cat);
+        if (appState.difficulty !== 'mixed') pool = pool.filter(q => q.difficulty === appState.difficulty);
+        questions = questions.concat(pickRandom(pool, 3));
+      });
+      questions = shuffle(questions);
+      appState.currentQuestions = questions;
+      appState.currentQuestionIndex = 0;
+      appState.score = 0;
+      appState.streak = 0;
+      appState.maxStreak = 0;
+      appState.answers = [];
+      appState.usedLifelines = { '50/50': false, skip: false, extraTime: false };
+      appState.badges = [];
+      appState.screen = 'question';
+      appState.timeLeft = appState.timerSeconds;
+      render();
+    }
+    // --- Question Screen ---
+    function renderQuestion(app) {
+      const q = appState.currentQuestions[appState.currentQuestionIndex];
+      if (!q) { appState.screen = 'results'; render(); return; }
+      appState.currentCategory = q.category;
+      // Timer
+      if (appState.timerEnabled) {
+        if (appState.timer) clearInterval(appState.timer);
+        appState.timeLeft = appState.timerSeconds;
+        appState.timer = setInterval(() => {
+          appState.timeLeft--;
+          document.getElementById('timer') && (document.getElementById('timer').textContent = formatTime(appState.timeLeft));
+          if (appState.timeLeft <= 0) {
+            clearInterval(appState.timer);
+            handleAnswer(-1); // Timeout
+          }
+        }, 1000);
+      }
+      // Render
+      app.innerHTML = `
+        <div class="card" aria-label="Question Card">
+          <div class="question-header">
+            <span class="question-category ${getCategoryColor(q.category)}">
+              <i class="fa-solid ${getCategoryIcon(q.category)}"></i> ${q.category}
+              <span class="question-difficulty" style="color:${getDifficultyColor(q.difficulty)};">${q.difficulty}</span>
+            </span>
+            ${appState.timerEnabled ? `<span class="question-timer" id="timer">${formatTime(appState.timeLeft)}</span>` : ''}
+          </div>
+          <div class="progress-bar"><div class="progress" style="width:${((appState.currentQuestionIndex+1)/appState.currentQuestions.length)*100}%"></div></div>
+          <h2 style="margin-bottom:10px;">${q.question}</h2>
+          <div class="options" id="options-list"></div>
+          <div class="lifelines" id="lifelines-list"></div>
+          <div class="score">Score: ${appState.score}</div>
+          <button class="btn secondary" id="hint-btn" aria-label="Show Hint">Hint</button>
+        </div>
+      `;
+      // Options
+      const optionsList = document.getElementById('options-list');
+      let options = q.options.map((opt,i) => ({text:opt,index:i}));
+      optionsList.innerHTML = options.map(opt => `
+        <button class="option-btn" id="opt-${opt.index}" tabindex="0" aria-label="Option ${String.fromCharCode(65+opt.index)}">${String.fromCharCode(65+opt.index)}. ${opt.text}</button>
+      `).join('');
+      options.forEach(opt => {
+        document.getElementById(`opt-${opt.index}`).onclick = () => handleAnswer(opt.index);
+        document.getElementById(`opt-${opt.index}`).onkeydown = e => {
+          if (e.key === 'Enter' || e.key === ' ') handleAnswer(opt.index);
+        };
+      });
+      // Lifelines
+      const lifelinesList = document.getElementById('lifelines-list');
+      lifelinesList.innerHTML = appState.lifelines.map(lf => `
+        <button class="lifeline-btn ${appState.usedLifelines[lf] ? 'used' : ''}" id="lifeline-${lf}" aria-label="${lf}">
+          <i class="fa-solid ${lf==='50/50'?'fa-percent':lf==='skip'?'fa-forward':'fa-clock'}"></i>
+          <span class="lifeline-tooltip">${lf==='50/50'?'Remove 2 wrong answers':lf==='skip'?'Skip Question':'Extra 15s'}</span>
+        </button>
+      `).join('');
+      appState.lifelines.forEach(lf => {
+        if (!appState.usedLifelines[lf]) {
+          document.getElementById(`lifeline-${lf}`).onclick = () => useLifeline(lf);
+        }
+      });
+      // Hint
+      document.getElementById('hint-btn').onclick = () => {
+        playSound('click');
+        showHint(q);
+      };
+    }
+    // --- Handle Answer ---
+    function handleAnswer(selected) {
+      const q = appState.currentQuestions[appState.currentQuestionIndex];
+      if (appState.timer) clearInterval(appState.timer);
+      let correct = selected === q.correct;
+      let points = correct ? q.points : 0;
+      let streakBonus = 0;
+      if (correct) {
+        appState.streak++;
+        appState.maxStreak = Math.max(appState.streak, appState.maxStreak);
+        if (appState.streak > 1) streakBonus = 5 * (appState.streak-1);
+        appState.score += points + streakBonus;
+        playSound('correct');
+      } else {
+        appState.streak = 0;
+        playSound('incorrect');
+      }
+      appState.answers.push({
+        question: q.question,
+        category: q.category,
+        difficulty: q.difficulty,
+        correct,
+        selected,
+        points,
+        streakBonus,
+        explanation: q.explanation
+      });
+      // Show feedback
+      showAnswerFeedback(selected, q.correct, q.explanation, correct, streakBonus);
+    }
+    // --- Show Answer Feedback ---
+    function showAnswerFeedback(selected, correctIdx, explanation, correct, streakBonus) {
+      // Disable all options
+      Array.from(document.getElementsByClassName('option-btn')).forEach((btn,i) => {
+        btn.classList.add('disabled');
+        if (i === correctIdx) btn.classList.add('correct');
+        if (i === selected && selected !== correctIdx) btn.classList.add('incorrect');
+      });
+      // Show explanation
+      const optionsList = document.getElementById('options-list');
+      const expDiv = document.createElement('div');
+      expDiv.className = 'explanation';
+      expDiv.innerHTML = `${correct ? '<i class="fa-solid fa-check-circle" style="color:var(--success);"></i> Correct!' : '<i class="fa-solid fa-times-circle" style="color:var(--error);"></i> Incorrect.'} ${explanation} ${streakBonus>0?`<br><span style="color:var(--secondary);font-weight:700;">Streak Bonus: +${streakBonus}</span>`:''}`;
+      optionsList.appendChild(expDiv);
+      // Next button
+      const card = document.querySelector('.card');
+      const nextBtn = document.createElement('button');
+      nextBtn.className = 'btn';
+      nextBtn.textContent = appState.currentQuestionIndex < appState.currentQuestions.length-1 ? 'Next Question' : 'See Results';
+      nextBtn.setAttribute('aria-label', nextBtn.textContent);
+      nextBtn.onclick = () => {
+        playSound('click');
+        appState.currentQuestionIndex++;
+        appState.showExplanation = false;
+        render();
+      };
+      card.appendChild(nextBtn);
+    }
+    // --- Use Lifeline ---
+    function useLifeline(lf) {
+      playSound('click');
+      appState.usedLifelines[lf] = true;
+      const q = appState.currentQuestions[appState.currentQuestionIndex];
+      if (lf === '50/50') {
+        // Remove 2 wrong options
+        let wrongs = [0,1,2,3].filter(i=>i!==q.correct);
+        let toRemove = pickRandom(wrongs,2);
+        toRemove.forEach(i => {
+          const btn = document.getElementById(`opt-${i}`);
+          if (btn) {
+            btn.disabled = true;
+            btn.style.opacity = 0.4;
+            btn.style.pointerEvents = 'none';
+          }
+        });
+      } else if (lf === 'skip') {
+        handleAnswer(q.correct); // Auto correct
+      } else if (lf === 'extraTime') {
+        appState.timeLeft += 15;
+        document.getElementById('timer').textContent = formatTime(appState.timeLeft);
+      }
+      render();
+    }
+    // --- Show Hint ---
+    function showHint(q) {
+      const card = document.querySelector('.card');
+      let hint = '';
+      if (q.difficulty === 'easy') hint = 'Think about the most common answer.';
+      else if (q.difficulty === 'medium') hint = 'Recall related facts or context clues.';
+      else hint = 'Focus on keywords or eliminate unlikely options.';
+      const hintDiv = document.createElement('div');
+      hintDiv.className = 'explanation';
+      hintDiv.innerHTML = `<i class="fa-solid fa-lightbulb" style="color:var(--secondary);"></i> Hint: ${hint}`;
+      card.appendChild(hintDiv);
+    }
+    // --- Results Screen ---
+    function renderResults(app) {
+      // Calculate stats
+      let correctCount = appState.answers.filter(a=>a.correct).length;
+      let total = appState.answers.length;
+      let percent = Math.round((correctCount/total)*100);
+      let catPerf = {};
+      appState.selectedCategories.forEach(cat => {
+        let catAns = appState.answers.filter(a=>a.category===cat);
+        let catCorrect = catAns.filter(a=>a.correct).length;
+        catPerf[cat] = { correct: catCorrect, total: catAns.length };
+      });
+      // Badges
+      let badges = [];
+      if (percent === 100) badges.push({name:'Perfect Score',icon:'fa-star',desc:'Answered all questions correctly!'});
+      if (appState.maxStreak >= 3) badges.push({name:'Streak Master',icon:'fa-bolt',desc:'3+ correct answers in a row!'});
+      Object.entries(catPerf).forEach(([cat,perf]) => {
+        if (perf.correct === perf.total) badges.push({name:`${cat} Master`,icon:getCategoryIcon(cat),desc:`Perfect in ${cat}`});
+      });
+      if (appState.timerEnabled && appState.timeLeft > 10) badges.push({name:'Speed Demon',icon:'fa-stopwatch',desc:'Finished with time to spare!'});
+      appState.badges = badges;
+      // Save stats
+      appState.stats.gamesPlayed++;
+      appState.stats.bestScore = Math.max(appState.stats.bestScore, appState.score);
+      appState.stats.highScores.push({score:appState.score,date:new Date().toLocaleDateString()});
+      appState.stats.favoriteCategory = Object.entries(catPerf).sort((a,b)=>b[1].correct-a[1].correct)[0][0];
+      appState.stats.categoryStats = catPerf;
+      saveStats(appState.stats);
+      // Render
+      app.innerHTML = `
+        <div class="card center" aria-label="Results Screen">
+          <h2>Game Over!</h2>
+          <div class="score">Final Score: ${appState.score} <span style="color:var(--muted);font-size:1rem;">(${percent}% correct)</span></div>
+          <div class="badges">${badges.map(b=>`<span class="badge"><i class="fa-solid ${b.icon}"></i> ${b.name}</span>`).join('')}</div>
+          <table class="results-table">
+            <tr><th>Category</th><th>Correct</th><th>Total</th></tr>
+            ${Object.entries(catPerf).map(([cat,perf])=>`<tr><td>${cat}</td><td>${perf.correct}</td><td>${perf.total}</td></tr>`).join('')}
+          </table>
+          <button class="btn" id="replay-btn" aria-label="Play Again">Play Again</button>
+          <button class="share-btn" id="share-btn" aria-label="Share Score"><i class="fa-solid fa-share"></i> Share</button>
+        </div>
+      `;
+      document.getElementById('replay-btn').onclick = () => {
+        playSound('click');
+        appState.screen = 'welcome';
+        render();
+      };
+      document.getElementById('share-btn').onclick = () => {
+        playSound('click');
+        shareScore(percent);
+      };
+    }
+    // --- Share Score ---
+    function shareScore(percent) {
+      const text = `I scored ${appState.score} (${percent}% correct) in Trivia Crack Quiz! Can you beat me?`;
+      if (navigator.share) {
+        navigator.share({ title: 'Trivia Crack Quiz', text });
+      } else {
+        navigator.clipboard.writeText(text);
+        alert('Score copied! Share it with your friends.');
+      }
+    }
+    // --- Statistics Dashboard ---
+    function renderStats(app) {
+      const stats = appState.stats;
+      app.innerHTML = `
+        <div class="card center" aria-label="Statistics Dashboard">
+          <h2>Statistics</h2>
+          <div class="stats">
+            <div>Games Played: <b>${stats.gamesPlayed}</b></div>
+            <div>Best Score: <b>${stats.bestScore}</b></div>
+            <div>Favorite Category: <b>${stats.favoriteCategory||'-'}</b></div>
+          </div>
+          <table class="results-table">
+            <tr><th>Category</th><th>Correct</th><th>Total</th></tr>
+            ${Object.entries(stats.categoryStats||{}).map(([cat,perf])=>`<tr><td>${cat}</td><td>${perf.correct}</td><td>${perf.total}</td></tr>`).join('')}
+          </table>
+          <button class="btn" id="back-btn" aria-label="Back to Welcome">Back</button>
+        </div>
+      `;
+      document.getElementById('back-btn').onclick = () => {
+        playSound('click');
+        appState.screen = 'welcome';
+        render();
+      };
+    }
+    // --- Theme Toggle ---
+    function updateThemeToggle() {
+      const btn = document.getElementById('theme-toggle');
+      const label = document.getElementById('theme-toggle-label');
+      if (appState.darkMode) {
+        document.documentElement.setAttribute('data-theme','dark');
+        btn.innerHTML = '<i class="fa-solid fa-sun"></i>';
+        label.textContent = 'Dark Mode';
+      } else {
+        document.documentElement.removeAttribute('data-theme');
+        btn.innerHTML = '<i class="fa-solid fa-moon"></i>';
+        label.textContent = 'Light Mode';
+      }
+      btn.onclick = () => {
+        appState.darkMode = !appState.darkMode;
+        render();
+      };
+    }
+    // --- Mute Toggle ---
+    function updateMuteToggle() {
+      const btn = document.getElementById('mute-toggle');
+      if (appState.muted) {
+        btn.innerHTML = '<i class="fa-solid fa-volume-mute"></i>';
+        soundEnabled = false;
+      } else {
+        btn.innerHTML = '<i class="fa-solid fa-volume-up"></i>';
+        soundEnabled = true;
+      }
+      btn.onclick = () => {
+        appState.muted = !appState.muted;
+        render();
+      };
+    }
+    // --- Keyboard Navigation ---
+    document.addEventListener('keydown', e => {
+      if (e.key === 'ArrowRight' && appState.screen === 'question') {
+        // Next question shortcut
+        if (appState.currentQuestionIndex < appState.currentQuestions.length-1) {
+          appState.currentQuestionIndex++;
+          render();
+        }
+      }
+      if (e.key === 'Escape') {
+        if (appState.screen === 'question') {
+          appState.screen = 'welcome';
+          render();
+        }
+      }
+    });
+    // --- Initial Render ---
+    render();
+  </script>
+</body>
+</html>
